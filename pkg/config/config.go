@@ -1,6 +1,11 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
+)
 
 type Config struct{
   DBHost     string `mapstructure:"DB_HOST"`
@@ -8,11 +13,14 @@ type Config struct{
   DBUser     string `mapstructure:"DB_USER"`
   DBPassword string `mapstructure:"DB_PASSWORD"`
   DBPort     string `mapstructure:"DB_PORT"`
+  Port     string `mapstructure:"PORT"`
+
 }
 
+var config Config
 
 var envs = []string{
-  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD" , "USER_SECRET"}
+  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD" ,"PORT"}
 
 func LoadConfig() (Config, error) {
 
@@ -37,7 +45,8 @@ func LoadConfig() (Config, error) {
   if err := validator.New().Struct(&config); err != nil {
     return config, err
   }
-  fmt.Println("env in LOad Config",config)
+
+  // fmt.Println("env in LOad Config",config)
 
   return config, nil
 
