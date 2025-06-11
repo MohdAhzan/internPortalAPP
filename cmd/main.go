@@ -1,12 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github/MohdAhzan/internPortalAPP/pkg/config"
-	"github/MohdAhzan/internPortalAPP/pkg/db"
+	"github/MohdAhzan/internPortalAPP/pkg/di"
 	"log"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main(){
@@ -15,28 +12,14 @@ func main(){
   if err!=nil{
     log.Fatal("Error loading Configs")
   }
-  DB,err:=db.ConnectDB(cfg)
+
+
+  server,err:=di.InitializeAPI(cfg)
   if err!=nil{
-    log.Fatal("Error connecting db",err)
+    log.Fatal(err,"FAILED TO START THE SERVER")
+  }else{
+   server.Start(cfg)
   }
-
-  testQuery:=fmt.Sprintf("select * from %s",cfg.DBName)
-  res:=DB.Raw(testQuery)
-  if res.Error !=nil{
-    fmt.Print("error fetching database info")
-  }
-    fmt.Println(res)
-
-  engine:=gin.New()
-  logger:=gin.Logger()
-  engine.Use(logger)
-  err=engine.Run(cfg.Port)
-  if err!=nil{
-    log.Fatal("server failed to start at ",cfg.Port)
-  }
-
-
-
 
 
   

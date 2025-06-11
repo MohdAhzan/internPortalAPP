@@ -14,13 +14,18 @@ type Config struct{
   DBPassword string `mapstructure:"DB_PASSWORD"`
   DBPort     string `mapstructure:"DB_PORT"`
   Port     string `mapstructure:"PORT"`
-
+  ReceptionistSecret  string `mapstructure:"RECEPTIONIST_SECRET"`
+  DoctorSecret  string `mapstructure:"DOCTOR_SECRET"`
+  AdminSecret  string `mapstructure:"ADMIN_SECRET"`
+  AdminName string `mapstructure:"ADMIN_NAME"`
+  AdminEmail string `mapstructure:"ADMIN_EMAIL"`
+  AdminPassword string `mapstructure:"ADMIN_PASSWORD"`
 }
 
 var config Config
 
 var envs = []string{
-  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD" ,"PORT"}
+  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD" ,"PORT","USER_SECRET","ADMIN_NAME","ADMIN_EMAIL","ADMIN_PASSWORD","ADMIN_SECRET"}
 
 func LoadConfig() (Config, error) {
 
