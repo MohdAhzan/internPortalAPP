@@ -6,10 +6,13 @@ import (
 	"github/MohdAhzan/internPortalAPP/pkg/helper"
 	"github/MohdAhzan/internPortalAPP/pkg/repository/interfaces"
 	usecase "github/MohdAhzan/internPortalAPP/pkg/usecase/interfaces"
+	response "github/MohdAhzan/internPortalAPP/pkg/utils/Response"
 	"github/MohdAhzan/internPortalAPP/pkg/utils/domain"
 	"github/MohdAhzan/internPortalAPP/pkg/utils/models"
 	"log"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AdminUsecase struct{
@@ -26,6 +29,41 @@ func NewAdminUsecase(adminRepo interfaces.AdminRepository,recepRepo interfaces.R
     cfg: cfg,
     h: h,
   }
+}
+
+func (a AdminUsecase) AdminLogin(model models.AdminLogin)(models.AdminLoginResponse,error){
+ 
+  adminCompareDetails, err := a.adminRepo.FetchAdminDetailsByEmail(model.Email)
+	if err != nil {
+		return models.AdminLoginResponse{}, err
+	}
+
+
+	err = bcrypt.CompareHashAndPassword([]byte(adminCompareDetails.Password), []byte(model.Password))
+	if err != nil {
+		return models.AdminLoginResponse{}, err
+	}
+
+
+	accessToken,refreshToken, err := a.h.GenerateAdminToken(response.UserDetailsResponse{
+    ID: adminCompareDetails.ID ,
+    Email: adminCompareDetails.Email,
+    Role: domain.Admin,
+  },a.cfg)
+
+	if err != nil {
+		return models.AdminLoginResponse{}, err
+	}
+    
+return  models.AdminLoginResponse{
+    ID: adminCompareDetails.ID,
+    Name: adminCompareDetails.Name,
+    Email: adminCompareDetails.Email,
+    AccessToken: accessToken,
+    RefreshToken: refreshToken,
+  },nil
+
+
 }
 
 

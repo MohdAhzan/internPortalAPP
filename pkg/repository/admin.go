@@ -18,6 +18,16 @@ func NewAdminRepository (dB *gorm.DB)interfaces.AdminRepository{
   }
 }
 
+func (u *AdminRepository) FetchAdminDetailsByEmail(email string)(domain.AdminDetails,error){
+  
+  var model domain.AdminDetails
+
+	if err := u.db.Raw("select * from admins where email = ? ", email).Scan(&model).Error; err != nil {
+		return domain.AdminDetails{}, err
+  }
+  return model,nil
+}
+
 
 func (u *AdminRepository) UserSignup(userModel models.UserSignup) (models.UserDetailsResponse, error) {
   var userDetails models.UserDetailsResponse

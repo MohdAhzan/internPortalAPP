@@ -15,17 +15,21 @@ type Config struct{
   DBPort     string `mapstructure:"DB_PORT"`
   Port     string `mapstructure:"PORT"`
   ReceptionistSecret  string `mapstructure:"RECEPTIONIST_SECRET"`
+  ReceptionistRefreshSecret  string `mapstructure:"RECEPTIONIST_REFRESH_SECRET"`
   DoctorSecret  string `mapstructure:"DOCTOR_SECRET"`
+  DoctorRefreshSecret  string `mapstructure:"DOCTOR_REFRESH_SECRET"`
   AdminSecret  string `mapstructure:"ADMIN_SECRET"`
+  AdminRefreshSecret  string `mapstructure:"ADMIN_REFRESH_SECRET"`
   AdminName string `mapstructure:"ADMIN_NAME"`
   AdminEmail string `mapstructure:"ADMIN_EMAIL"`
   AdminPassword string `mapstructure:"ADMIN_PASSWORD"`
+
 }
 
 var config Config
 
 var envs = []string{
-  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD" ,"PORT","USER_SECRET","ADMIN_NAME","ADMIN_EMAIL","ADMIN_PASSWORD","ADMIN_SECRET"}
+  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD" ,"PORT","USER_SECRET","ADMIN_NAME","ADMIN_EMAIL","ADMIN_PASSWORD","ADMIN_SECRET","ADMIN_REFRESH_SECRET","RECEPTIONIST_SECRET","RECEPTIONIST_REFRESH_SECRET","DOCTER_SECRET","DOCTOR_REFRESH_SECRET"}
 
 func LoadConfig() (Config, error) {
 

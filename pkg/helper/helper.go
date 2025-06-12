@@ -39,7 +39,39 @@ func (h *Helper) PasswordHashing(password string) (string, error) {
 	return hash, nil
 }
 
-func (h *Helper)GenerateAdmin(user response.UserDetailsResponse,cfg config.Config) (string,  error) {
+func (h *Helper)GenerateAdminToken(admin response.UserDetailsResponse,cfg config.Config) (accessTokenString string, refreshTokenString string, err error) {
+	accessTokenClaims := &AuthCustomClaims{
+		Id:    admin.ID,
+		Email: admin.Email,
+		Role:  string(domain.Receptionist),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 1)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
+	accessTokenString, err = accessToken.SignedString([]byte(cfg.AdminSecret))
+	if err != nil {
+		return "","", err
+	}
+  
+	refreshTokenClaims := jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		Subject:   admin.ID.String(),
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
+  refreshTokenString, err = refreshToken.SignedString([]byte(cfg.AdminRefreshSecret)) 
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessTokenString, refreshTokenString, nil
+
+}
+
+func (h *Helper)GenerateReceptionistToken(user response.UserDetailsResponse,cfg config.Config) (accessTokenString string, refreshTokenString string, err error) {
 	accessTokenClaims := &AuthCustomClaims{
 		Id:    user.ID,
 		Email: user.Email,
@@ -51,33 +83,27 @@ func (h *Helper)GenerateAdmin(user response.UserDetailsResponse,cfg config.Confi
 	}
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
-	accessTokenString, err := accessToken.SignedString([]byte(cfg.ReceptionistSecret))
+	accessTokenString, err = accessToken.SignedString([]byte(cfg.ReceptionistSecret))
 	if err != nil {
-		return "", err
+		return "","", err
 	}
-	return accessTokenString,  nil
+
+	refreshTokenClaims := jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		Subject:   user.ID.String(),
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
+  refreshTokenString, err = refreshToken.SignedString([]byte(cfg.ReceptionistRefreshSecret)) 
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessTokenString, refreshTokenString, nil
+
 }
 
-func (h *Helper)GenerateReceptionistToken(user response.UserDetailsResponse,cfg config.Config) (string,  error) {
-	accessTokenClaims := &AuthCustomClaims{
-		Id:    user.ID,
-		Email: user.Email,
-		Role:  string(domain.Receptionist),
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 1)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-		},
-	}
-
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
-	accessTokenString, err := accessToken.SignedString([]byte(cfg.ReceptionistSecret))
-	if err != nil {
-		return "", err
-	}
-	return accessTokenString,  nil
-}
-
-func (h *Helper)GenerateDoctorToken(user response.UserDetailsResponse,cfg config.Config) (string,  error) {
+func (h *Helper)GenerateDoctorToken(user response.UserDetailsResponse,cfg config.Config) (accessTokenString string, refreshTokenString string, err error) {
 	accessTokenClaims := &AuthCustomClaims{
 		Id:    user.ID,
 		Email: user.Email,
@@ -87,23 +113,26 @@ func (h *Helper)GenerateDoctorToken(user response.UserDetailsResponse,cfg config
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
+  
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
-	accessTokenString, err := accessToken.SignedString([]byte(cfg.ReceptionistSecret))
+	accessTokenString, err = accessToken.SignedString([]byte(cfg.DoctorSecret))
 	if err != nil {
-		return "", err
-	}
-	return accessTokenString,  nil
-}
-
-func (h *Helper) CompareHashAndPassword(hashPass string, pass string) error {
-
-	err := bcrypt.CompareHashAndPassword([]byte(hashPass), []byte(pass))
-
-	if err != nil {
-		return err
+		return "","", err
 	}
 
-	return nil
+	refreshTokenClaims := jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)), 
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		Subject:   user.ID.String(),
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
+  refreshTokenString, err = refreshToken.SignedString([]byte(cfg.DoctorRefreshSecret)) 
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessTokenString, refreshTokenString, nil
+
 
 }
 

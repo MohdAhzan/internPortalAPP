@@ -16,7 +16,7 @@ type ServerHTTP struct{
   engine *gin.Engine
 }
 
-func NewServeHTTP(userHandler *handlers.AdminHandler,cfg config.Config,adminAuth middleware.AdminAuth,receptionistAuth middleware.ReceptionistAuth,doctorAuth middleware.DoctorAuth) (*ServerHTTP){
+func NewServeHTTP(adminHandler *handlers.AdminHandler,cfg config.Config,adminAuth middleware.AdminAuth,receptionistAuth middleware.ReceptionistAuth,doctorAuth middleware.DoctorAuth) (*ServerHTTP){
   newEngine:=gin.New()
   logger:=gin.Logger()
   newEngine.Use(logger)
@@ -24,7 +24,7 @@ func NewServeHTTP(userHandler *handlers.AdminHandler,cfg config.Config,adminAuth
 
 
   routes.ReceptionistRoutes(newEngine.Group("/receptionist"),gin.HandlerFunc(receptionistAuth))
-  routes.AdminRoutes(newEngine.Group("/admin"),gin.HandlerFunc(adminAuth),userHandler)
+  routes.AdminRoutes(newEngine.Group("/admin"),gin.HandlerFunc(adminAuth),adminHandler)
   routes.DoctorRoutes(newEngine.Group("/doctor"),gin.HandlerFunc(doctorAuth))
 
   return &ServerHTTP{

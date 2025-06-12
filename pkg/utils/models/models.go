@@ -43,3 +43,11 @@ type TokenUsers struct {
 	RefreshToken string
 }
 
+type AdminLoginResponse struct {
+	ID       uuid.UUID   
+  Name      string
+	Email    string 
+	AccessToken  string
+	RefreshToken string
+}
+
