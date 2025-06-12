@@ -8,6 +8,7 @@ import (
 	usecase "github/MohdAhzan/internPortalAPP/pkg/usecase/interfaces"
 	"github/MohdAhzan/internPortalAPP/pkg/utils/domain"
 	"github/MohdAhzan/internPortalAPP/pkg/utils/models"
+	"log"
 	"time"
 )
 
@@ -57,18 +58,20 @@ func (a AdminUsecase)UserSignup(userModel models.UserSignup)(models.UserDetailsR
     return  res,nil
   }
 
-  if  userModel.Department == ""{
-    return models.UserDetailsResponse{},errors.New("enter department for doctors")
-  }
-
-  var docDetails domain.DoctorDetails
-  docDetails.Department = userModel.Department 
 
   if userModel.Role != domain.Doctor{
     return models.UserDetailsResponse{},errors.New("enter only valid roles")
   }
 
+  var docDetails domain.DoctorDetails
+  docDetails.Department = userModel.Department 
 
+
+  if  userModel.Department == ""{
+    return models.UserDetailsResponse{},errors.New("enter department for doctors")
+  }
+
+   log.Println("CHCEKKKK",userModel) 
   res,err:=a.adminRepo.AddDoctorDetail(userModel,docDetails)
   if err!=nil{
     return models.UserDetailsResponse{}  ,errors.Join(errors.New("error signin doctor"),err)

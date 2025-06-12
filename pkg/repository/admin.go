@@ -36,7 +36,7 @@ func (u *AdminRepository) AddDoctorDetail(userModel models.UserSignup,details do
   if err != nil {
     return models.UserDetailsResponse{}, err
   }
-  err=u.db.Raw("insert into doctor_details (user_id,department,created_at,updated_at) values (?,?,?,?)",userDetails.ID,userModel.Department,userModel.CreatedAt,userModel.UpdatedAt).Error
+  err=u.db.Exec("insert into doctor_details (user_id,department,created_at,updated_at) values (?,?,?,?)",userDetails.ID,userModel.Department,userModel.CreatedAt,userModel.UpdatedAt).Error
   if err != nil {
     return models.UserDetailsResponse{}, err
   }
