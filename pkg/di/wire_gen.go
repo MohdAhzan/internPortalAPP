@@ -28,11 +28,11 @@ func InitializeAPI(cfg config.Config) (*server.ServerHTTP, error) {
 	receptionRepository := repository.NewReceptionRepository(gormDB)
 	helperHelper := helper.NewHelper(cfg)
 	adminUsecase := usecase.NewAdminUsecase(adminRepository, receptionRepository, cfg, helperHelper)
-	userHandler := handlers.NewUserHandler(adminUsecase)
+	adminHandler := handlers.NewUserHandler(adminUsecase)
 	adminAuth := NewAdminAuth(cfg)
 	receptionistAuth := NewReceptionistAuth(cfg)
 	doctorAuth := NewDoctorAuth(cfg)
-	serverHTTP := server.NewServeHTTP(userHandler, cfg, adminAuth, receptionistAuth, doctorAuth)
+	serverHTTP := server.NewServeHTTP(adminHandler, cfg, adminAuth, receptionistAuth, doctorAuth)
 	return serverHTTP, nil
 }
 

@@ -5,8 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-func AdminRoutes(engine *gin.RouterGroup,adminAuth gin.HandlerFunc,userHandler *handlers.UserHandler){
+func AdminRoutes(engine *gin.RouterGroup,adminAuth gin.HandlerFunc,userHandler *handlers.AdminHandler){
+  
+  // engine.Use(adminAuth)
   engine.POST("/signup",userHandler.UserSignup)
-
 }
 
